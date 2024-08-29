@@ -1,7 +1,6 @@
 import { PaymentRepository } from "../../app/interfaces/repositories/payment.repositorie";
 import {
   InputCreatePaymentDTO,
-  InputUpdatePaymentDTO,
   IPaymentService,
   OutputFindAllPaymentDTO,
 } from "../../app/interfaces/services/payment";
@@ -12,9 +11,6 @@ export class PaymentService implements IPaymentService {
   async create(data: InputCreatePaymentDTO): Promise<void> {
     const payment = Payment.create(data.amount, data.method, data.orderId);
     await this.repository.create(payment);
-  }
-  update(data: InputUpdatePaymentDTO): Promise<void> {
-    throw new Error("Method not implemented.");
   }
   async findAll(): Promise<OutputFindAllPaymentDTO[]> {
     const payments = await this.repository.findAll();
