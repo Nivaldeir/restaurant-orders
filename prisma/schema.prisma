@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Table {
+  id     String       @id @default(uuid()) @db.Uuid
+  name   String       @db.VarChar(100)
+  status String
+  orders TableOrder[]
+}
+
+model Category {
+  id       String    @id @default(uuid()) @db.Uuid
+  name     String    @db.VarChar(100)
+  products Product[]
+}
+
+model Ingredient {
+  id                      String                   @id @default(uuid()) @db.Uuid
+  name                    String                   @db.VarChar(100)
+  price                   Float
+  productIngredients      ProductIngredient[]
+  orderProductIngredients OrderProductIngredient[]
+}
+
+model Product {
+  id            String              @id @default(uuid()) @db.Uuid
+  name          String              @db.VarChar(100)
+  price         Float               @db.DoublePrecision
+  categorie     Category            @relation(fields: [categorieId], references: [id], onDelete: Cascade)
+  categorieId   String              @db.Uuid
+  ingredients   ProductIngredient[]
+  orderProducts OrderProduct[]
+}
+
+model ProductIngredient {
+  id           String     @id @default(uuid()) @db.Uuid
+  product      Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId    String     @db.Uuid
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  ingredientId String     @db.Uuid
+}
+
+model TableOrder {
+  id            String         @id @default(uuid()) @db.Uuid
+  table         Table          @relation(fields: [tableId], references: [id], onDelete: Cascade)
+  tableId       String         @db.Uuid
+  totalPrice    Float          @db.DoublePrecision
+  orderStatus   String         @db.VarChar(100)
+  duration      DateTime       @db.Timestamp(0)
+  payment       Payment?       @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  paymentId     String?        @db.Uuid
+  orderProducts OrderProduct[]
+}
+
+model OrderProduct {
+  id                      String                   @id @default(uuid()) @db.Uuid
+  tableOrder              TableOrder               @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId                 String                   @db.Uuid
+  product                 Product                  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId               String                   @db.Uuid
+  status                  String                   @db.VarChar(100)
+  price                   Float                    @db.DoublePrecision
+  orderProductIngredients OrderProductIngredient[]
+  Payment                 Payment[]
+}
+
+model OrderProductIngredient {
+  id             String       @id @default(uuid()) @db.Uuid
+  orderProduct   OrderProduct @relation(fields: [orderProductId], references: [id], onDelete: Cascade)
+  orderProductId String       @db.Uuid
+  ingredient     Ingredient   @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  ingredientId   String       @db.Uuid
+}
+
+model Payment {
+  id          String       @id @default(uuid()) @db.Uuid
+  method      String       @db.VarChar(255)
+  order       OrderProduct @relation(fields: [orderId], references: [id])
+  amount      Float        @db.DoublePrecision
+  tableOrders TableOrder[]
+  orderId     String       @db.Uuid
+}
