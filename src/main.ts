@@ -1,6 +1,9 @@
-import { CreateProductController } from "./infra/http/server/express/controllers/product/create-product.controller";
+import { PrismaClient } from "@prisma/client";
+import { FactoryServices } from "./core/app/factory/factory-service";
 import { Express } from "./infra/http/server/express/express";
+import { ControllerFactory } from "./infra/http/server/express/factory/controller-factory";
 
-const createProduct = new CreateProductController("/product", "get");
-const server = new Express([createProduct]);
+const services = FactoryServices.create(new PrismaClient());
+const controllers = ControllerFactory.createControllers(services);
+const server = new Express(controllers);
 server.start(3000);
