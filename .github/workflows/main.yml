@@ -14,4 +14,15 @@ jobs:
         run: 
           echo "Voce criou seu primeiro workflow"
           echo "Parabens"
-          
+      - name: "Script Python"
+        run: |
+          variavel = "Hello wordl !!!"
+          print(variavel)
+        shell: python
+  segundo-job:
+    name: "Instalacao do ambiente NodeJS"
+    runs-on: ubuntu-latest 
+    steps:
+      - name: "Verificar versao atual do nodejs"
+        run: node --version
+        
