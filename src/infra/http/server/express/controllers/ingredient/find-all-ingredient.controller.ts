@@ -1,29 +1,24 @@
 import { Request, Response } from "express";
 import { Controller, HttpMethod, ResponseType } from "../controler";
-import { ICategorieService } from "../../../../../../core/app/interfaces/services/categorie";
+import { IIngredientService } from "../../../../../../core/app/interfaces/services/ingredient";
 
-type InputResponse = {
-  name: string;
-};
-
-export class CreateCategorieController implements Controller {
+export class FindAllIngredientsController implements Controller {
   constructor(
     private readonly path: string,
     private readonly method: HttpMethod,
-    private readonly service: ICategorieService
+    private readonly service: IIngredientService
   ) {}
-
   getHandler(): (
-    request: Request<{}, {}, InputResponse, {}, Record<string, any>>,
+    request: Request<any>,
     response: Response<ResponseType>
   ) => Promise<void> {
     return async (request, response): Promise<void> => {
       try {
-        const { name } = request.body;
-        const createdCategory = await this.service.create({ name });
-        response.status(201).json({
-          message: "Category created successfully",
-          data: createdCategory,
+        const findAll = await this.service.findAll();
+
+        response.status(200).json({
+          message: "Table find with successfully",
+          data: findAll,
         });
       } catch (error) {
         response.status(500).json({
